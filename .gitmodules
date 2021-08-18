@@ -1,0 +1,3 @@
+[submodule "hive"]
+	path = hive
+	url = git@gitee.com:garryz/hive.git
