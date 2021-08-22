@@ -42,3 +42,4 @@ luac.out
 # Dir
 /build/
 /etc/
+/log/
