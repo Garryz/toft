@@ -8,4 +8,4 @@ cd $abspath/../build
 
 cmake $abspath/../hive
 
-cmake --build . --config Release --target all --clean-first
+cmake --build . --config Release --target all --clean-first -j 14
