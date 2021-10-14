@@ -13,6 +13,7 @@ function get_platform(){
 function set_global(){
     get_platform
     real_path=$(cd "$(dirname "$0")";pwd)
+    cd $real_path/..
     config_file="$real_path/../etc/machine.conf"
     [ ! -f $config_file ] && red_echo "配置文件 $config_file 不存在, 退出脚本" && exit
     [ "$1"!="nolog" ] && echo "本脚本文件所在目录路径是: $real_path"    
