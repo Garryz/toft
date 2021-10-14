@@ -8,9 +8,13 @@ function cell.main()
 
     machine.init()
 
-    for k, v in pairs(machine.getRedisConf("game")) do
-        log.info(k, v)
+    local redis = cell.newservice("redisSrv", machine.getRedisConf("game"))
+    local value = cell.call(redis, "get", "test")
+    if value then
+        log.info(value)
     end
+    cell.call(redis, "set", "test", 1)
+    log.info(cell.call(redis, "get", "test"))
 
     cluster.open("master")
 
