@@ -8,13 +8,21 @@ function cell.main()
 
     machine.init()
 
-    local redis = cell.newservice("redisSrv", machine.getRedisConf("game"))
-    local value = cell.call(redis, "get", "test")
-    if value then
-        log.info(value)
+    local pool = cell.newservice("poolSrv", "redisSrv", 3, "redisSrv", true, machine.getRedisConf("game"))
+
+    local function test(i)
+        local redis = cell.call(pool, "getSrvIdByHash", i)
+        local value = cell.call(redis, "get", "test")
+        if value then
+            log.info(value)
+        end
+        cell.call(redis, "set", "test", i + 1)
+        log.info(cell.call(redis, "get", "test"))
     end
-    cell.call(redis, "set", "test", 1)
-    log.info(cell.call(redis, "get", "test"))
+
+    test(0)
+    test(1)
+    test(2)
 
     cluster.open("master")
 
