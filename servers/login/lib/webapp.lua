@@ -83,7 +83,7 @@ function web.httpRequest(ip, url, method, headers, path, query, body)
         end
     end
 
-    resStr = string.pack(">I2I2c" .. #resStr, cmd, #resStr, resStr)
+    resStr = string.pack(">I2>I2c" .. #resStr, cmd, #resStr, resStr)
 
     return 200, resStr
 end
