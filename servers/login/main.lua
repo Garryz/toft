@@ -12,5 +12,25 @@ function cell.main()
 
     cluster.open("login")
 
+    local pb = require "pb"
+
+    local protoUtil = require "utils.protoUtil"
+    protoUtil.init()
+
+    local req = {
+        username = "二哈",
+        password = "三哈"
+    }
+
+    local data = assert(protoUtil.encode("login.registerReq", req))
+
+    local msg = assert(protoUtil.decode("login.registerReq", data))
+
+    print(string.toString(msg))
+
+    print(protoUtil.enumNum("cmd.requestCmd", "login_register"))
+
+    print(protoUtil.enumStr("cmd.requestCmd", 0))
+
     log.info("login start end")
 end

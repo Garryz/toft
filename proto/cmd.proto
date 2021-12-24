@@ -1,0 +1,17 @@
+syntax = "proto3";
+package cmd;
+
+// 消息命令字
+enum requestCmd {
+    login_register = 0;
+}
+
+// 消息请求映射
+enum requestReq {
+    login_registerReq = 0;
+}
+
+// 消息回复映射
+enum requestRsp {
+    login_registerRsp = 0;
+}

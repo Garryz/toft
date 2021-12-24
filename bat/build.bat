@@ -1,3 +1,5 @@
+rd /s /q %~dp0..\build
+
 mkdir %~dp0..\build
 
 cmake --no-warn-unused-cli -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -H%~dp0..\hive -B%~dp0..\build -G "Visual Studio 16 2019" -T host=x64 -A x64

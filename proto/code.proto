@@ -1,0 +1,7 @@
+syntax = "proto3";
+package code;
+
+// 消息错误码
+enum code {
+    OK = 0; // 成功
+}

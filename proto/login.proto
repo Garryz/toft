@@ -1,0 +1,14 @@
+syntax = "proto3";
+package login;
+
+//------------------------
+//---  注册请求
+//------------------------
+message registerReq {
+    string username = 1;
+	string password = 2;
+}
+
+message registerRsp {
+    string token = 1;
+}
