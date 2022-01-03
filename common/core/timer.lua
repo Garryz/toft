@@ -1,4 +1,5 @@
 local cell = require "cell"
+local log = require "log"
 
 local ostime = os.time
 local osdate = os.date
@@ -39,7 +40,10 @@ function timer.timeOut(timeCount, func, ...)
         cell.timeout(
             obj.time.sec * 1000,
             function()
-                obj.func(table.unpack(obj.args))
+                local ok, err = pcall(obj.func, table.unpack(obj.args))
+                if not ok then
+                    log.error(err)
+                end
                 doWork(obj)
             end
         )
@@ -72,7 +76,10 @@ function timer.timeOfHour(min, sec, func, ...)
         cell.timeout(
             (ostime(obj.time) - ostime()) * 1000,
             function()
-                obj.func(table.unpack(obj.args))
+                local ok, err = pcall(obj.func, table.unpack(obj.args))
+                if not ok then
+                    log.error(err)
+                end
                 obj.time.hour = obj.time.hour + 1 -- 每小时
                 doWork(obj)
             end
@@ -106,7 +113,10 @@ function timer.timeOfDay(hour, min, sec, func, ...)
         cell.timeout(
             (ostime(obj.time) - ostime()) * 1000,
             function()
-                obj.func(table.unpack(obj.args))
+                local ok, err = pcall(obj.func, table.unpack(obj.args))
+                if not ok then
+                    log.error(err)
+                end
                 obj.time.day = obj.time.day + 1 -- 每天
                 doWork(obj)
             end
@@ -146,7 +156,10 @@ function timer.timeOfWeek(wday, hour, min, sec, func, ...)
         cell.timeout(
             (ostime(obj.time) - ostime()) * 1000,
             function()
-                obj.func(table.unpack(obj.args))
+                local ok, err = pcall(obj.func, table.unpack(obj.args))
+                if not ok then
+                    log.error(err)
+                end
                 obj.time.day = obj.time.day + 7
                 doWork(obj)
             end
@@ -180,7 +193,10 @@ function timer.timeOfMonth(day, hour, min, sec, func, ...)
         cell.timeout(
             (ostime(obj.time) - ostime()) * 1000,
             function()
-                obj.func(table.unpack(obj.args))
+                local ok, err = pcall(obj.func, table.unpack(obj.args))
+                if not ok then
+                    log.error(err)
+                end
                 obj.time.month = obj.time.month + 1
                 doWork(obj)
             end
@@ -213,7 +229,10 @@ function timer.specificTime(year, month, day, hour, min, sec, func, ...)
         cell.timeout(
             (ostime(obj.time) - ostime()) * 1000,
             function()
-                obj.func(table.unpack(obj.args))
+                local ok, err = pcall(obj.func, table.unpack(obj.args))
+                if not ok then
+                    log.error(err)
+                end
             end
         )
     end
