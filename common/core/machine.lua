@@ -4,10 +4,10 @@ local datasheet = require "datasheet"
 
 local machine = {}
 
-local machine_conf = "__MACHINE"
+local machineConf = "__MACHINE"
 
 function machine.init()
-    local file = env.getconfig("machine_conf")
+    local file = env.getconfig("machineConf")
     local f = assert(io.open(file, "rb"), file)
 
     local data = {}
@@ -21,17 +21,17 @@ function machine.init()
 
     f:close()
 
-    builder.new(machine_conf, data)
+    builder.new(machineConf, data)
 end
 
 function machine.get(k)
-    local data = datasheet.query(machine_conf)
+    local data = datasheet.query(machineConf)
     assert(data)
     return data[k]
 end
 
 function machine.getRedisConf(name)
-    local data = datasheet.query(machine_conf)
+    local data = datasheet.query(machineConf)
     assert(data)
     local conf = {
         host = data[name .. "_redis_host"],
@@ -41,6 +41,29 @@ function machine.getRedisConf(name)
     }
     conf.port = conf.port and tonumber(conf.port)
     conf.db = conf.db and tonumber(conf.db)
+    return conf
+end
+
+function machine.getTcpListenConf(nodeName)
+    local data = datasheet.query(machineConf)
+    assert(data)
+    local conf = {
+        host = data[nodeName .. "_listen_host"],
+        port = data[nodeName .. "_port"]
+    }
+    conf.port = conf.port and tonumber(conf.port)
+    return conf
+end
+
+function machine.getWsListenConf(nodeName)
+    local data = datasheet.query(machineConf)
+    assert(data)
+    local conf = {
+        host = data[nodeName .. "_listen_host"],
+        protocol = data[nodeName .. "ws_protocol"],
+        port = data[nodeName .. "_ws_port"]
+    }
+    conf.port = conf.port and tonumber(conf.port)
     return conf
 end
 
