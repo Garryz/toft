@@ -12,8 +12,6 @@ function cell.main()
 
     cluster.open("login")
 
-    local pb = require "pb"
-
     local protoUtil = require "utils.protoUtil"
     protoUtil.init()
 

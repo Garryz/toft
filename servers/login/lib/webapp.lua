@@ -51,14 +51,9 @@ function web.httpRequest(ip, url, method, headers, path, query, body)
         return 404
     end
 
-    local req = {}
-    local reqDesc = protoUtil.enumStr("cmd.requestReq", cmd)
-    if reqDesc then
-        reqDesc = reqDesc:gsub("_", ".")
-        req = protoUtil.decode(reqDesc, data)
-        if not req then
-            req = {}
-        end
+    local ok, req = protoUtil.decodeByCmd(cmd, data)
+    if not ok then
+        return 404
     end
 
     local ok, code, res = pcall(func, req)
@@ -73,18 +68,12 @@ function web.httpRequest(ip, url, method, headers, path, query, body)
     res = res or {}
     res.code = code
 
-    local resStr = ""
-    local rspDesc = protoUtil.enumStr("cmd.requestRsp", cmd)
-    if rspDesc then
-        rspDesc = rspDesc:gsub("_", ".")
-        resStr = protoUtil.encode(rspDesc, res)
-        if not resStr then
-            resStr = ""
-        end
+    local ok, resStr = protoUtil.encodeByCmd(cmd, res)
+    if not ok then
+        return 404
     end
 
     resStr = string.pack(">I2>I2c" .. #resStr, cmd, #resStr, resStr)
-
     return 200, resStr
 end
 

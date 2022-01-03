@@ -46,4 +46,50 @@ function protoUtil.enumStr(enumType, enumNum)
     return pb.enum(enumType, enumNum)
 end
 
+function protoUtil.encodeByProto(protoName, data)
+    local cmdStr = protoName:gsub(".", "_")
+    local cmd = protoUtil.enumNum("cmd.reqeustRsp", cmdStr)
+    if not cmd then
+        log.errorf("cmd.reqeustRsp cmdStr=%s not exist", cmdStr)
+        return false
+    end
+    local resStr = protoUtil.encode(protoName, data)
+    if not resStr then
+        log.errorf("protoName=%s, data=%s encode error", protoName, string.toString(data))
+        return false
+    end
+    return true, cmd, resStr
+end
+
+function protoUtil.encodeByCmd(cmd, data)
+    local resStr = ""
+    local rspDesc = protoUtil.enumStr("cmd.requestRsp", cmd)
+    if not rspDesc then
+        log.errorf("cmd.requestRsp cmd=%s not exist", cmd)
+        return false
+    end
+    rspDesc = rspDesc:gsub("_", ".")
+    resStr = protoUtil.encode(rspDesc, data)
+    if not resStr then
+        log.errorf("protoName=%s, data=%s encode error", rspDesc, string.toString(data))
+        return false
+    end
+    return true, resStr
+end
+
+function protoUtil.decodeByCmd(cmd, data)
+    local reqDesc = protoUtil.enumStr("cmd.requestReq", cmd)
+    if not reqDesc then
+        log.errorf("cmd.requestReq cmd=%s not exist", cmd)
+        return false
+    end
+    reqDesc = reqDesc:gsub("_", ".")
+    local req = protoUtil.decode(reqDesc, data)
+    if not req then
+        log.errorf("protoName=%s decode error", reqDesc)
+        return false
+    end
+    return true, req
+end
+
 return protoUtil
