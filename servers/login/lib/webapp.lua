@@ -51,7 +51,7 @@ function web.httpRequest(ip, url, method, headers, path, query, body)
         return 404
     end
 
-    local ok, req = protoUtil.decodeByCmd(cmd, data)
+    local ok, _, req = protoUtil.decodeReqByCmd(cmd, data)
     if not ok then
         return 404
     end
@@ -68,7 +68,7 @@ function web.httpRequest(ip, url, method, headers, path, query, body)
     res = res or {}
     res.code = code
 
-    local ok, resStr = protoUtil.encodeByCmd(cmd, res)
+    local ok, resStr = protoUtil.encodeRspByCmd(cmd, res)
     if not ok then
         return 404
     end

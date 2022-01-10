@@ -1,36 +1,32 @@
 local cell = require "cell"
 local log = require "log"
 local machine = require "machine"
-local cluster = require "cluster"
-local httpc = require "http.httpc"
-local protoUtil = require "utils.protoUtil"
+local env = require "env"
 
 function cell.main()
     log.info("client start")
 
     machine.init()
 
-    protoUtil.init()
+    -- 获取机器人名称
+    local robotName = env.getconfig("robotName")
+    -- 获取机器人数量
+    local robotNum = env.getconfig("robotNum")
+    -- 获取过程id
+    local processId = env.getconfig("processId")
 
-    local req = {
-        username = "二哈",
-        password = "三哈"
-    }
+    -- 创建机器人服务(机器人对应一个robotSrv服务)
+    local addrList = {}
+    for i = 1, robotNum do
+        local addr = cell.newservice("robotSrv")
+        table.insert(addrList, addr)
+    end
 
-    local data = assert(protoUtil.encode("login.registerReq", req))
-    local msg = string.pack(">I2>I2c" .. #data, 0, #data, data)
-
-    local status, body = httpc.request("POST", "http://127.0.0.1:8080", "/", nil, nil, msg, 2000)
-    log.infof("status = %s", status)
-
-    local cmd = string.unpack(">I2", body)
-    log.infof("cmd = %s", cmd)
-    local rspDesc = protoUtil.enumStr("cmd.requestRsp", cmd)
-    rspDesc = rspDesc:gsub("_", ".")
-    local len = string.unpack(">I2", body, 3)
-    local data = string.unpack("c" .. len, body, 5)
-    local rsp = protoUtil.decode(rspDesc, data)
-    log.infof("rsp data = %s", string.toString(rsp))
+    -- 通知机器人服务开始任务过程
+    for i, addr in ipairs(addrList) do
+        local name = string.format("%s_%05d", robotName, i)
+        cell.call(addr, "doStart", name, processId)
+    end
 
     log.info("client start end")
 end

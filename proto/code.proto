@@ -4,4 +4,7 @@ package code;
 // 消息错误码
 enum code {
     OK = 0; // 成功
+    UNKNOWN = 404; // 未知
+    TOKEN_AUTH_FAIL = 500; // TOKEN验证失败
+    REPLACE_LOGIN = 501; // 被顶号
 }

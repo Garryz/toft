@@ -10,5 +10,38 @@ message registerReq {
 }
 
 message registerRsp {
-    string token = 1;
+    uint32 code = 1;
+    string token = 2;
+    string host = 3;
+    uint32 port = 4;
+    uint32 wsport = 5;
+    uint32 uid = 6;
+}
+
+//------------------------
+//---  注册请求
+//------------------------
+message authTokenReq {
+    uint32 uid = 1;
+    string token = 2;
+}
+
+message authTokenRsp {
+    uint32 code = 1;
+}
+
+//------------------------
+//---  服务器状态通知
+//------------------------
+message serverCodeNot {
+    uint32 code = 1;
+}
+
+//------------------------
+//---  心跳
+//------------------------
+message keepAliveReq {
+}
+
+message keepAliveRsp {
 }

@@ -4,14 +4,22 @@ package cmd;
 // 消息命令字
 enum requestCmd {
     login_register = 0;
+    login_authToken = 1;
+    login_keepAlive = 2;
 }
 
 // 消息请求映射
 enum requestReq {
     login_registerReq = 0;
+    login_authTokenReq = 1;
+    login_keepAliveReq = 2;
 }
 
 // 消息回复映射
 enum requestRsp {
     login_registerRsp = 0;
+    login_authTokenRsp = 1;
+    login_keepAliveRsp = 2;
+    
+    login_serverCodeNot = 32768;
 }

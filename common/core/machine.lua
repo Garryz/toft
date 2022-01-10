@@ -60,7 +60,7 @@ function machine.getWsListenConf(nodeName)
     assert(data)
     local conf = {
         host = data[nodeName .. "_listen_host"],
-        protocol = data[nodeName .. "ws_protocol"],
+        protocol = data[nodeName .. "_ws_protocol"],
         port = data[nodeName .. "_ws_port"]
     }
     conf.port = conf.port and tonumber(conf.port)
