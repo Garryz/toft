@@ -15,14 +15,18 @@ end
 
 function clusterClass:checkServer()
     local currentTime = cell.time()
+    local downServerMap = {}
     local down = false
     for _, serverObj in ipairs(self.serverList) do
-        local aliveTime = serverObj:getAliveTime()
-        if aliveTime > 0 and currentTime - aliveTime > const.SERVER_DOWN_TIME then
-            log.errorf("[%s] server disconnected", serverObj:getNodeName())
-            -- 服务器断开连接 现在无用
-            serverObj:setDisabled()
-            down = true
+        if serverObj:isAvailable() then
+            local aliveTime = serverObj:getAliveTime()
+            if aliveTime > 0 and currentTime - aliveTime > const.SERVER_DOWN_TIME then
+                log.errorf("[%s] server disconnected", serverObj:getNodeName())
+                -- 服务器断开连接 现在无用
+                serverObj:setDisabled()
+                downServerMap[serverObj:getNodeName()] = true
+                down = true
+            end
         end
     end
 
@@ -30,6 +34,8 @@ function clusterClass:checkServer()
     if down then
         self:clacWeight()
     end
+
+    return downServerMap
 end
 
 function clusterClass:getServerByNodeName(nodeName)

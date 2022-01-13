@@ -8,12 +8,12 @@ function serverClass:ctor(serverConf)
     self.nodeType = serverConf.nodeType
     self.host = serverConf.host
     self.port = serverConf.port
-    self.wsport = serverConf.wsport
-    self.wssport = serverConf.wssport
+    self.wsPort = serverConf.wsport
+    self.wsProtocol = serverConf.wsProtocol
+    self.load = serverConf.load or 0
 
     self.available = true
     self.aliveTime = 0
-    self.load = 0
 end
 
 function serverClass:setWeight(weight)
@@ -62,8 +62,8 @@ function serverClass:formatServerInfo()
         nodeType = self.nodeType,
         host = self.host,
         port = self.port,
-        wsport = self.wsport,
-        wssport = self.wssport
+        wsPort = self.wsPort,
+        wsProtocol = self.wsProtocol
     }
 end
 

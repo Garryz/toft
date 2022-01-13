@@ -11,6 +11,8 @@ function cell.main()
 
     local nodeName = env.getconfig("nodeName")
 
+    cell.uniqueservice("stewardSrv")
+
     cell.newservice("watchdogSrv", machine.getTcpListenConf(nodeName), "tcpHandler")
     cell.newservice("watchdogSrv", machine.getWsListenConf(nodeName), "wsHandler")
     cell.uniqueservice("gateSrv")
