@@ -2,13 +2,19 @@ local cell = require "cell"
 
 local redisClass = Class("redisClass")
 
-function redisClass:ctor(redisPoolSrvName)
+function redisClass:ctor(redisPoolSrvName, key)
     self.redisPoolSrvName = redisPoolSrvName
+    self.key = key
+    self.redis = nil
+    self:initRedis()
+end
+
+function redisClass:initRedis()
+    self.redis = cell.call(self.redisPoolSrvName, "getSrvIdByHash", tostring(self.key))
 end
 
 function redisClass:callRedis(cmd, key, ...)
-    local redis = cell.call(self.redisPoolSrvName, "getSrvIdByHash", tostring(key))
-    return cell.call(redis, cmd, key, ...)
+    return cell.call(self.redis, cmd, key, ...)
 end
 
 function redisClass:hset(hash, field, value)
