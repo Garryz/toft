@@ -73,7 +73,7 @@ function redisClass:hvals(hash)
     return self:callRedis("hvals", hash)
 end
 
-function redisClass:set(key, value, expireSec, noExist)
+function redisClass:set(key, value, noExist, expireSec)
     local args = {"set", key, value}
     if expireSec then
         table.insert(args, "ex")

@@ -44,6 +44,24 @@ function machine.getRedisConf(name)
     return conf
 end
 
+function machine.getMysqlConf(name)
+    local data = datasheet.query(machineConf)
+    assert(data)
+    local conf = {
+        host = data[name .. "_mysql_host"],
+        port = data[name .. "_mysql_port"],
+        user = data[name .. "_mysql_user"],
+        password = data[name .. "_mysql_password"],
+        database = data[name .. "_mysql_database"],
+        max_packet_size = data[name .. "_mysql_max_packet_size"],
+        charset = data[name .. "_mysql_charset"]
+    }
+    conf.port = conf.port and tonumber(conf.port) or 3306
+    conf.max_packet_size = conf.max_packet_size and tonumber(conf.max_packet_size) or 1024 * 1024
+    conf.charset = conf.charset or "utf8mb4"
+    return conf
+end
+
 function machine.getTcpListenConf(nodeName)
     local data = datasheet.query(machineConf)
     assert(data)
@@ -65,6 +83,12 @@ function machine.getWsListenConf(nodeName)
     }
     conf.port = conf.port and tonumber(conf.port)
     return conf
+end
+
+function machine.getBeginUid()
+    local data = datasheet.query(machineConf)
+    assert(data)
+    return data.begin_uid and tonumber(data.begin_uid) or 10000
 end
 
 return machine
