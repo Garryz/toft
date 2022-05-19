@@ -58,7 +58,7 @@ function web.httpRequest(ip, url, method, headers, path, query, body)
 
     local ok, code, res = pcall(func, req)
     if not ok then
-        log.errorf("controller %s func %s exec error", controllerName, funcName)
+        log.errorf("controller %s func %s exec error %s", controllerName, funcName, code)
         return 404
     end
     if not code then
