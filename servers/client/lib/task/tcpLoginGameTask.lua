@@ -1,5 +1,4 @@
 -- 登陆游戏服任务
-
 local baseTask = require "task.baseTask"
 local log = require "log"
 local socket = require "socket"
@@ -29,13 +28,17 @@ function tcpLoginGameTask:doStart()
     local sock = socket.connect(self.host, self.port)
 
     if not sock then
+        log.errorf("host = %s, port = %s, sock not exist", self.host, self.port)
         self:doAgain()
         return
     end
 
     self.robot:initSock(sock, 1)
 
-    self.robot:send2S("login.authTokenReq", {uid = self.uid, token = self.token})
+    self.robot:send2S("login.authTokenReq", {
+        uid = self.uid,
+        token = self.token
+    })
 end
 
 function tcpLoginGameTask:login_authTokenRsp(data)
@@ -57,7 +60,7 @@ function tcpLoginGameTask:onRegisterOk(data)
     self.uid = data.uid
 
     self.robot.uid = self.uid
-    log.infof("tcpLoginGameTask:onRegisterOk [%s]->uid:%s", self.robot.name, self.uid)
+    log.infof("tcpLoginGameTask:onRegisterOk [%s]->uid:%s data=%s", self.robot.name, self.uid, string.toString(data))
 end
 
 return tcpLoginGameTask

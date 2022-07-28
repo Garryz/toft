@@ -1,5 +1,4 @@
 -- 登陆游戏服任务
-
 local baseTask = require "task.baseTask"
 local log = require "log"
 local websocket = require "http.websocket"
@@ -36,7 +35,10 @@ function wsLoginGameTask:doStart()
 
     self.robot:initSock(sock, 2)
 
-    self.robot:send2S("login.authTokenReq", {uid = self.uid, token = self.token})
+    self.robot:send2S("login.authTokenReq", {
+        uid = self.uid,
+        token = self.token
+    })
 end
 
 function wsLoginGameTask:login_authTokenRsp(data)

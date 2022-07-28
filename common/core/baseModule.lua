@@ -60,15 +60,12 @@ function baseModule:delToRedis()
 end
 
 function baseModule:initMysqlTable(force)
-    self.mysql:initTable(
-        {
-            tableName = self.tableName,
-            columnNameOptions = self:getInitColumnNameOptions(),
-            keyName = self.keyName,
-            index = self.index
-        },
-        force
-    )
+    self.mysql:initTable({
+        tableName = self.tableName,
+        columnNameOptions = self:getInitColumnNameOptions(),
+        keyName = self.keyName,
+        index = self.index
+    }, force)
 end
 
 function baseModule:getFromMysql()
@@ -84,7 +81,7 @@ function baseModule:delToMysql()
 end
 
 function baseModule:setData(data)
-    if not data then
+    if not data or not next(data) then
         return false
     end
 

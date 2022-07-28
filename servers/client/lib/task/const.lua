@@ -33,28 +33,25 @@ const.taskStatus = {
 			* 使用前置任务完成限制顺序
 --]]
 const.processDef = {
-    [1] = {
-        {
-            taskType = const.taskType.TASK_HTTP_REGISTER,
-            exeInterval = 1,
-            times = 1,
-            needDoneTask = {},
-            param = {
-                host = "127.0.0.1:8080"
-            }
-        },
-        {
-            taskType = const.taskType.TASK_TCP_LOGIN_GAME,
-            exeInterval = 1,
-            times = 1,
-            needDoneTask = {const.taskType.TASK_HTTP_REGISTER}
+    [1] = {{
+        taskType = const.taskType.TASK_HTTP_REGISTER,
+        exeInterval = 1,
+        times = 1,
+        needDoneTask = {},
+        param = {
+            host = "127.0.0.1:8080"
         }
-        -- {
-        --     taskType = const.taskType.TASK_WS_LOGIN_GAME,
-        --     exeInterval = 1,
-        --     times = 1,
-        --     needDoneTask = {const.taskType.TASK_HTTP_REGISTER}
-        -- }
+    }, {
+        taskType = const.taskType.TASK_TCP_LOGIN_GAME,
+        exeInterval = 1,
+        times = 1,
+        needDoneTask = {const.taskType.TASK_HTTP_REGISTER}
+    } -- {
+    --     taskType = const.taskType.TASK_WS_LOGIN_GAME,
+    --     exeInterval = 1,
+    --     times = 1,
+    --     needDoneTask = {const.taskType.TASK_HTTP_REGISTER}
+    -- }
     }
 }
 

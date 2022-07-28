@@ -7,4 +7,10 @@ enum code {
     UNKNOWN = 404; // 未知
     TOKEN_AUTH_FAIL = 500; // TOKEN验证失败
     REPLACE_LOGIN = 501; // 被顶号
+    USERNAME_REPEAT = 502; // 账号名重复
+    PARAMETER_ERROR = 503; // 参数错误
+    TOKEN_EXPIRE = 504; // TOKEN失效
+    UID_NOEXIST = 505; // UID不存在
+    USER_NOEXIST = 506; // 账号不存在
+    PASSWORD_ERROR = 507; // 密码错误
 }

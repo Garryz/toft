@@ -19,7 +19,7 @@ message registerRsp {
 }
 
 //------------------------
-//---  注册请求
+//---  登录验证
 //------------------------
 message authTokenReq {
     uint32 uid = 1;
@@ -44,4 +44,22 @@ message keepAliveReq {
 }
 
 message keepAliveRsp {
+}
+
+//------------------------
+//---  登录
+//------------------------
+message loginReq {
+    string token = 1;
+    string username = 2;
+    string password = 3;
+}
+
+message loginRsp {
+    uint32 code = 1;
+    string token = 2;
+    string host = 3;
+    uint32 port = 4;
+    uint32 wsport = 5;
+    uint32 uid = 6;
 }

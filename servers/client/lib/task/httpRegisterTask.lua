@@ -4,6 +4,7 @@ local protoUtil = require "utils.protoUtil"
 local log = require "log"
 local httpc = require "http.httpc"
 local code = require "code"
+local crypt = require "crypt"
 
 local httpRegisterTask = Class("httpRegisterTask", baseTask)
 
@@ -17,8 +18,8 @@ function httpRegisterTask:doStart()
     httpRegisterTask.super.doStart(self)
 
     local req = {
-        username = "二哈",
-        password = "三哈"
+        username = crypt.base64encode(crypt.randomkey()),
+        password = crypt.base64encode(crypt.randomkey())
     }
     local ok, cmd, resStr = protoUtil.encodeReqByProto("login.registerReq", req)
     if not ok then
@@ -36,7 +37,8 @@ function httpRegisterTask:doStart()
         return
     end
 
-    if not (rsp.code and rsp.code == code.OK) then
+    if not rsp.code or rsp.code ~= code.OK then
+        log.errorf("rsp.code = %s", rsp.code)
         self:doAgain()
         return
     end

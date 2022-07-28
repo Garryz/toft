@@ -21,14 +21,22 @@ end
 
 local function doAuth(msg)
     if msg.cmdStr ~= "login.authTokenReq" then
-        return false, "login.authTokenRsp", {code = code.TOKEN_AUTH_FAIL}
+        return false, "login.authTokenRsp", {
+            code = code.TOKEN_AUTH_FAIL
+        }
     end
-    return true, "login.authTokenRsp", {code = code.OK}, 10000
+    return true, "login.authTokenRsp", {
+        code = code.OK
+    }, 10000
 end
 
 -- watchdogSrv -> gateSrv
 function gate.open(fd, watchdog)
-    connectMap[fd] = {fd = fd, watchdog = watchdog, auth = false}
+    connectMap[fd] = {
+        fd = fd,
+        watchdog = watchdog,
+        auth = false
+    }
 end
 
 -- watchdogSrv -> gateSrv
@@ -59,14 +67,19 @@ function gate.forward(fd, msg)
             if s.fd ~= fd then
                 local oldC = connectMap[s.fd]
                 if oldC then
-                    cell.send(oldC.watchdog, "push2C", s.fd, "login.serverCodeNot", {code = code.REPLACE_LOGIN})
+                    cell.send(oldC.watchdog, "push2C", s.fd, "login.serverCodeNot", {
+                        code = code.REPLACE_LOGIN
+                    })
                     cell.send(oldC.watchdog, "close", s.fd)
                 end
                 s.fd = fd
             end
             s.heart = os.time()
         else
-            local newSession = {fd = fd, heart = os.time()}
+            local newSession = {
+                fd = fd,
+                heart = os.time()
+            }
 
             -- TODO 分配game节点 并 login
             -- 检查连接是否存在
@@ -83,7 +96,9 @@ function gate.forward(fd, msg)
 
     local s = sessionMap[c.uid]
     if not s then
-        cell.send(c.watchdog, "push2C", fd, "login.serverCodeNot", {code = code.UNKNOWN})
+        cell.send(c.watchdog, "push2C", fd, "login.serverCodeNot", {
+            code = code.UNKNOWN
+        })
     else
         -- TODO 转发给game服
         s.heart = os.time()

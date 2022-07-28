@@ -12,25 +12,10 @@ function cell.main()
 
     cell.uniqueservice("httpServerSrv", "127.0.0.1", 8080, 3, "webapp", 8192)
 
+    cell.newservice("poolSrv", "redisSrv", 3, "redisSrv", false, machine.getRedisConf("game"))
+    cell.newservice("poolSrv", "mysqlSrv", 3, "mysqlSrv", false, machine.getMysqlConf("game"))
+
     cluster.open("login")
-
-    local protoUtil = require "utils.protoUtil"
-    protoUtil.init()
-
-    local req = {
-        username = "二哈",
-        password = "三哈"
-    }
-
-    local data = assert(protoUtil.encode("login.registerReq", req))
-
-    local msg = assert(protoUtil.decode("login.registerReq", data))
-
-    print(string.toString(msg))
-
-    print(protoUtil.enumNum("cmd.requestCmd", "login_register"))
-
-    print(protoUtil.enumStr("cmd.requestCmd", 0))
 
     log.info("login start end")
 end

@@ -8,7 +8,7 @@ function serverClass:ctor(serverConf)
     self.nodeType = serverConf.nodeType
     self.host = serverConf.host
     self.port = serverConf.port
-    self.wsPort = serverConf.wsport
+    self.wsPort = serverConf.wsPort
     self.wsProtocol = serverConf.wsProtocol
     self.load = serverConf.load or 0
 
