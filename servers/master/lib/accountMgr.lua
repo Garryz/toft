@@ -1,4 +1,5 @@
 local log = require "log"
+local cluster = require "cluster"
 
 local accountMgr = {}
 -- 状态
@@ -9,7 +10,7 @@ local STATUS = {
 }
 
 -- 玩家列表
-local accounts = {} -- accounts[uid] = {uid = uid, status = status}
+local accounts = {} -- accounts[uid] = {uid = uid, status = status, gate = gate}
 
 function accountMgr.login(uid)
     local account = accounts[uid]
@@ -24,8 +25,12 @@ function accountMgr.login(uid)
     end
     -- 在线，顶替
     if account then
-        -- TODO
         account.status = STATUS.LOGOUT
+        if account.gate then
+            cluster.call(account.gate, "gateSrv", "kick", uid, "login.serverCodeNot", {
+                code = code.REPLACE_LOGIN
+            })
+        end
     end
     -- 上线
     local account = {
@@ -34,6 +39,19 @@ function accountMgr.login(uid)
     }
     accounts[uid] = account
     return true
+end
+
+function accountMgr.setGate(uid, nodeName)
+    local account = accounts[uid]
+    if not account then
+        return
+    end
+
+    account.gate = nodeName
+end
+
+function accountMgr.clearAccount(uid)
+    accounts[uid] = nil
 end
 
 return accountMgr

@@ -3,7 +3,7 @@ local const = {}
 -- 任务类型和任务模块名对应
 const.taskType = {
     TASK_HTTP_REGISTER = "httpRegisterTask", -- 账号注册任务
-    TASK_HTTP_USER_LOGIN = "httpUserLoginTask", -- 账号密码登陆任务
+    TASK_HTTP_USER_LOGIN = "httpLoginTask", -- 账号密码登陆任务
     TASK_TCP_LOGIN_GAME = "tcpLoginGameTask", -- tcp登陆游戏任务
     TASK_WS_LOGIN_GAME = "wsLoginGameTask", -- ws登陆游戏任务
     TAKS_DISSCONNECT_GAME = "disconnectGameTask" -- 断开游戏服连接任务
@@ -52,7 +52,23 @@ const.processDef = {
     --     times = 1,
     --     needDoneTask = {const.taskType.TASK_HTTP_REGISTER}
     -- }
-    }
+    },
+    [2] = {{
+        taskType = const.taskType.TASK_HTTP_USER_LOGIN,
+        exeInterval = 1,
+        times = 1,
+        needDoneTask = {},
+        param = {
+            host = "127.0.0.1:8080",
+            username = "CVKMVsTGd2w=",
+            password = "nvtcPBSDNWc="
+        }
+    }, {
+        taskType = const.taskType.TASK_TCP_LOGIN_GAME,
+        exeInterval = 1,
+        times = 1,
+        needDoneTask = {const.taskType.TASK_HTTP_USER_LOGIN}
+    }}
 }
 
 return const

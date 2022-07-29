@@ -24,7 +24,7 @@ function cell.main()
 
     -- 通知机器人服务开始任务过程
     for i, addr in ipairs(addrList) do
-        local name = string.format("%s_%05d", robotName, i)
+        local name = string.format("%s_%09d", robotName, i)
         cell.call(addr, "doStart", name, processId)
     end
 

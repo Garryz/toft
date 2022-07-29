@@ -4,6 +4,9 @@ local const = require "const"
 local timer = require "timer"
 local log = require "log"
 local protoUtil = require "utils.protoUtil"
+local tokenUtil = require "utils.tokenUtil"
+local cluster = require "cluster"
+local env = require "env"
 
 local connectMap = {} -- fd -> {fd = fd, watchdog = watchdog, auth = false, uid = uid}
 local sessionMap = {} -- uid -> {fd = fd, gameNode = gameNode, gameAgent = gameAgent, heart = heart}
@@ -25,9 +28,16 @@ local function doAuth(msg)
             code = code.TOKEN_AUTH_FAIL
         }
     end
+    local ok, errStr = tokenUtil.auth(msg.req.uid, msg.req.token)
+    if not ok then
+        log.errorf("doAuth error %s", errStr)
+        return false, "login.authTokenRsp", {
+            code = code.TOKEN_AUTH_FAIL
+        }
+    end
     return true, "login.authTokenRsp", {
         code = code.OK
-    }, 10000
+    }, msg.req.uid
 end
 
 -- watchdogSrv -> gateSrv
@@ -80,6 +90,14 @@ function gate.forward(fd, msg)
                 fd = fd,
                 heart = os.time()
             }
+
+            cluster.send("master", "accountMgr", "setGate", uid, env.getconfig("nodeName"))
+
+            local gameServer = cluster.call("master", "serverMgr", "dispatchServer", "game", uid)
+            if not gameServer then
+                gate.kick(uid)
+                return
+            end
 
             -- TODO 分配game节点 并 login
             -- 检查连接是否存在
@@ -202,6 +220,7 @@ function gate.kick(uid, protoName, res)
         cell.send(c.watchdog, "push2C", fd, protoName, res)
     end
     cell.send(c.watchdog, "close", fd)
+    cluster.send("master", "accountMgr", "clearAccount", uid)
 end
 
 function gate.init()

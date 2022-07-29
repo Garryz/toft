@@ -35,7 +35,7 @@ function tokenUtil.parseToken(token)
         return false, string.format("time expire, val %d", time)
     end
 
-    return ture, uid, password
+    return true, uid, password
 end
 
 function tokenUtil.auth(uid, token)
@@ -44,12 +44,8 @@ function tokenUtil.auth(uid, token)
     end
 
     local ok, tuid, tpassword = tokenUtil.parseToken(token)
-    if not ok then
-        return false, tuid
-    end
-
-    if not tuid or not tpassword then
-        return false, "token parse fail!"
+    if not ok or not tuid or not tpassword then
+        return false, string.format("token parse fail! token is %s", token)
     end
 
     tuid = tonumber(tuid) or 0
