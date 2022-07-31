@@ -10,7 +10,7 @@ local STATUS = {
 }
 
 -- 玩家列表
-local accounts = {} -- accounts[uid] = {uid = uid, status = status, gate = gate}
+local accounts = {} -- accounts[uid] = {uid = uid, status = status, gate = gate, game = game, gameAgent = gameAgent}
 
 function accountMgr.login(uid)
     local account = accounts[uid]
@@ -50,8 +50,43 @@ function accountMgr.setGate(uid, nodeName)
     account.gate = nodeName
 end
 
-function accountMgr.clearAccount(uid)
+function accountMgr.setGame(uid, game, gameAgent)
+    local account = accounts[uid]
+    if not account then
+        return
+    end
+
+    account.game = game
+    account.gameAgent = gameAgent
+end
+
+function accountMgr.getSession(uid)
+    local account = accounts[uid]
+    if not account then
+        return
+    end
+
+    return {
+        gate = account.gate,
+        game = account.game,
+        gameAgent = account.gameAgent
+    }
+end
+
+function accountMgr.logout(uid)
+    local account = accounts[uid]
+    if not account then
+        return false
+    end
+
+    if account.status ~= STATUS.GAME then
+        return false
+    end
+    account.status = STATUS.LOGOUT
+
     accounts[uid] = nil
+
+    return true
 end
 
 return accountMgr

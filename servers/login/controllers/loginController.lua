@@ -101,8 +101,6 @@ function login.login(msg)
     end
 
     local gateServer = cluster.call("master", "serverMgr", "dispatchServer", "gate", uid)
-    local log = require "log"
-    log.infof("current select gateServer is %s", string.toString(gateServer))
 
     local data = {
         code = code.OK,

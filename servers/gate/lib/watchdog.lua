@@ -59,13 +59,18 @@ local function dispatch(fd)
             if not ok then
                 return
             end
-            local ok, cmdStr, req = protoUtil.decodeReqByCmd(cmd, data)
+            local cmdStr = protoUtil.enumStr("cmd.requestCmd", cmd)
+            local ok, _, req = protoUtil.decodeReqByCmd(cmd, data)
             if not ok then
                 goto continue
             end
             waitFds[fd] = nil
             cmdStr = cmdStr:gsub("_", ".")
-            local msg = {cmd = cmd, cmdStr = cmdStr, req = req}
+            local msg = {
+                cmd = cmd,
+                cmdStr = cmdStr,
+                req = req
+            }
             cell.send("gateSrv", "forward", fd, msg)
 
             ::continue::
@@ -135,24 +140,18 @@ end
 function watchdog.init(conf, h)
     handler = h
     protoUtil.init()
-    socket.listen(
-        conf.host,
-        conf.port,
-        function(fd, addr, listenSock)
-            cell.fork(
-                function()
-                    local sock = handler.acceptSock(fd, addr, conf)
-                    if sock then
-                        socks[fd] = sock
-                        sock:onclose(onclose)
-                        waitFds[fd] = os.time()
-                        cell.send("gateSrv", "open", fd, cell.self)
-                        cell.fork(dispatch(fd))
-                    end
-                end
-            )
-        end
-    )
+    socket.listen(conf.host, conf.port, function(fd, addr, listenSock)
+        cell.fork(function()
+            local sock = handler.acceptSock(fd, addr, conf)
+            if sock then
+                socks[fd] = sock
+                sock:onclose(onclose)
+                waitFds[fd] = os.time()
+                cell.send("gateSrv", "open", fd, cell.self)
+                cell.fork(dispatch(fd))
+            end
+        end)
+    end)
     timer.timeOut(const.WAIT_SOCKET_EXPIRE_TIME, expire)
 end
 

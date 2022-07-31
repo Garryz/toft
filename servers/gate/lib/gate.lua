@@ -3,7 +3,6 @@ local code = require "code"
 local const = require "const"
 local timer = require "timer"
 local log = require "log"
-local protoUtil = require "utils.protoUtil"
 local tokenUtil = require "utils.tokenUtil"
 local cluster = require "cluster"
 local env = require "env"
@@ -23,7 +22,7 @@ local function heart()
 end
 
 local function doAuth(msg)
-    if msg.cmdStr ~= "login.authTokenReq" then
+    if msg.cmdStr ~= "login.authToken" then
         return false, "login.authTokenRsp", {
             code = code.TOKEN_AUTH_FAIL
         }
@@ -51,7 +50,18 @@ end
 
 -- watchdogSrv -> gateSrv
 function gate.close(fd)
+    local c = connectMap[fd]
     connectMap[fd] = nil
+    if not c or not c.uid or c.replace then
+        return
+    end
+    local s = sessionMap[c.uid]
+    sessionMap[c.uid] = nil
+    if not s or not s.game or not s.gameAgent then
+        return
+    end
+    cluster.call(s.game, s.gameAgent, "logout", c.uid)
+    cluster.send("master", "accountMgr", "logout", c.uid)
 end
 
 -- watchdogSrv -> gateSrv
@@ -77,6 +87,7 @@ function gate.forward(fd, msg)
             if s.fd ~= fd then
                 local oldC = connectMap[s.fd]
                 if oldC then
+                    oldC.replace = true
                     cell.send(oldC.watchdog, "push2C", s.fd, "login.serverCodeNot", {
                         code = code.REPLACE_LOGIN
                     })
@@ -88,10 +99,11 @@ function gate.forward(fd, msg)
         else
             local newSession = {
                 fd = fd,
-                heart = os.time()
+                heart = os.time(),
+                gate = env.getconfig("nodeName")
             }
 
-            cluster.send("master", "accountMgr", "setGate", uid, env.getconfig("nodeName"))
+            cluster.send("master", "accountMgr", "setGate", uid, newSession.gate)
 
             local gameServer = cluster.call("master", "serverMgr", "dispatchServer", "game", uid)
             if not gameServer then
@@ -99,10 +111,23 @@ function gate.forward(fd, msg)
                 return
             end
 
-            -- TODO 分配game节点 并 login
-            -- 检查连接是否存在
+            local gameAgent = cluster.call(gameServer.nodeName, "gateSrv", "getSrvIdByHash", uid)
+            if not gameAgent then
+                gate.kick(uid)
+                return
+            end
+
+            newSession.game = gameServer.nodeName
+            newSession.gameAgent = gameAgent
+
+            local ok = cluster.call(gameServer.nodeName, gameAgent, "login", uid, newSession)
+            if not ok then
+                gate.kick(uid)
+                return
+            end
+
             if not connectMap[fd] then
-                -- 刚刚分配的game节点 logout
+                gate.kick(uid)
                 return
             end
 
@@ -118,8 +143,11 @@ function gate.forward(fd, msg)
             code = code.UNKNOWN
         })
     else
-        -- TODO 转发给game服
         s.heart = os.time()
+
+        msg.req.uid = c.uid
+
+        cluster.send(s.game, s.gameAgent, "protoData", msg)
     end
 end
 
@@ -207,7 +235,6 @@ function gate.kick(uid, protoName, res)
         return
     end
     sessionMap[uid] = nil
-    -- TODO 通知gameAgent logout
     local fd = session.fd
     if not fd then
         return
@@ -220,11 +247,9 @@ function gate.kick(uid, protoName, res)
         cell.send(c.watchdog, "push2C", fd, protoName, res)
     end
     cell.send(c.watchdog, "close", fd)
-    cluster.send("master", "accountMgr", "clearAccount", uid)
 end
 
 function gate.init()
-    protoUtil.init()
     timer.timeOut(const.WAIT_SOCKET_EXPIRE_TIME, heart)
 end
 
