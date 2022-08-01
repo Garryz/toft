@@ -143,4 +143,17 @@ function baseModule:delData()
     self:delToMysql()
 end
 
+-- 登录处理
+function baseModule:doLogin()
+
+end
+
+function baseModule:loginOver()
+
+end
+
+function baseModule:doLogout()
+    self:saveData()
+end
+
 return baseModule

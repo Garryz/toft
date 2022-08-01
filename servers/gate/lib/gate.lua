@@ -6,6 +6,7 @@ local log = require "log"
 local tokenUtil = require "utils.tokenUtil"
 local cluster = require "cluster"
 local env = require "env"
+local protoUtil = require "utils.protoUtil"
 
 local connectMap = {} -- fd -> {fd = fd, watchdog = watchdog, auth = false, uid = uid}
 local sessionMap = {} -- uid -> {fd = fd, gameNode = gameNode, gameAgent = gameAgent, heart = heart}
@@ -61,7 +62,7 @@ function gate.close(fd)
         return
     end
     cluster.call(s.game, s.gameAgent, "logout", c.uid)
-    cluster.send("master", "accountMgr", "logout", c.uid)
+    cluster.call("master", "accountMgr", "logout", c.uid)
 end
 
 -- watchdogSrv -> gateSrv
@@ -103,7 +104,7 @@ function gate.forward(fd, msg)
                 gate = env.getconfig("nodeName")
             }
 
-            cluster.send("master", "accountMgr", "setGate", uid, newSession.gate)
+            cluster.call("master", "accountMgr", "setGate", uid, newSession.gate)
 
             local gameServer = cluster.call("master", "serverMgr", "dispatchServer", "game", uid)
             if not gameServer then
@@ -250,6 +251,7 @@ function gate.kick(uid, protoName, res)
 end
 
 function gate.init()
+    protoUtil.init()
     timer.timeOut(const.WAIT_SOCKET_EXPIRE_TIME, heart)
 end
 

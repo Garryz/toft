@@ -91,4 +91,13 @@ function machine.getBeginUid()
     return data.begin_uid and tonumber(data.begin_uid) or 10000
 end
 
+function machine.isTest()
+    local data = datasheet.query(machineConf)
+    assert(data)
+    if not data.mode then
+        return false
+    end
+    return data.mode == "DEBUG"
+end
+
 return machine
