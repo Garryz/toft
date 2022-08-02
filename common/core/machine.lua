@@ -91,6 +91,13 @@ function machine.getBeginUid()
     return data.begin_uid and tonumber(data.begin_uid) or 10000
 end
 
+function machine.getDebugPort(nodeName)
+    local data = datasheet.query(machineConf)
+    assert(data)
+    local port = data[nodeName .. "_debugport"]
+    return port and tonumber(port)
+end
+
 function machine.isTest()
     local data = datasheet.query(machineConf)
     assert(data)

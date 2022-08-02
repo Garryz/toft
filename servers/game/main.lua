@@ -12,6 +12,8 @@ function cell.main()
 
     machine.init()
 
+    cell.uniqueservice("service.debugconsole", machine.getDebugPort(nodeName))
+
     cell.uniqueservice("stewardSrv")
 
     cell.newservice("poolSrv", "gameAgentSrv", 20, "gateSrv", true)

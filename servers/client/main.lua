@@ -8,6 +8,8 @@ function cell.main()
 
     machine.init()
 
+    cell.uniqueservice("service.debugconsole", machine.getDebugPort("client"))
+
     -- 获取机器人名称
     local robotName = env.getconfig("robotName")
     -- 获取机器人数量

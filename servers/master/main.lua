@@ -11,6 +11,8 @@ function cell.main()
 
     machine.init()
 
+    cell.uniqueservice("service.debugconsole", machine.getDebugPort("master"))
+
     cell.uniqueservice("serverMgrSrv")
     cell.uniqueservice("accountMgrSrv")
 
