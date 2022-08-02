@@ -58,6 +58,7 @@ function accountMgr.setGame(uid, game, gameAgent)
 
     account.game = game
     account.gameAgent = gameAgent
+    account.status = STATUS.GAME
 end
 
 function accountMgr.getSession(uid)
