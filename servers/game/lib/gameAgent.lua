@@ -30,8 +30,7 @@ local function autoSaveData()
         saveTime = const.SAVE_DATA_TIME_TEST
     end
 
-    roleMgr:autoSaveRoleData()
-    timer.timeOut(saveTime, autoSaveData)
+    timer.timeOut(saveTime, roleMgr.autoSaveRoleData, roleMgr)
 end
 
 -- 初始化code

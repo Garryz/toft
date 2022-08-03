@@ -19,7 +19,7 @@ function roleMgr:logoutRole(uid)
         return
     end
 
-    roleObj:logoutRole()
+    roleObj:logoutModule()
     self.roleList[uid] = nil
 end
 

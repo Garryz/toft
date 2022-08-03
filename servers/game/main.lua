@@ -16,7 +16,7 @@ function cell.main()
 
     cell.uniqueservice("stewardSrv")
 
-    cell.newservice("poolSrv", "gameAgentSrv", 20, "gateSrv", true)
+    cell.newservice("poolSrv", "gameAgentSrv", 20, "gameSrv", true)
 
     cell.newservice("poolSrv", "redisSrv", 3, "redisSrv", false, machine.getRedisConf("game"))
     cell.newservice("poolSrv", "mysqlSrv", 3, "mysqlSrv", false, machine.getMysqlConf("game"))

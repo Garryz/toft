@@ -61,8 +61,15 @@ function gate.close(fd)
     if not s or not s.game or not s.gameAgent then
         return
     end
-    cluster.call(s.game, s.gameAgent, "logout", c.uid)
-    cluster.call("master", "accountMgr", "logout", c.uid)
+    local ok, error = pcall(cluster.call, s.game, s.gameAgent, "logout", c.uid)
+    if not ok then
+        log.errorf("logout gameAgent error, game = %s, gameAgent = %s, uid = %s", string.toString(s.game),
+            string.toString(s.gameAgent), string.toString(c.uid))
+    end
+    ok, error = pcall(cluster.call, "master", "accountMgr", "logout", c.uid)
+    if not ok then
+        log.errorf("logout accountMgr error, uid = %s", string.toString(c.uid))
+    end
 end
 
 -- watchdogSrv -> gateSrv
@@ -112,7 +119,7 @@ function gate.forward(fd, msg)
                 return
             end
 
-            local gameAgent = cluster.call(gameServer.nodeName, "gateSrv", "getSrvIdByHash", uid)
+            local gameAgent = cluster.call(gameServer.nodeName, "gameSrv", "getSrvIdByHash", uid)
             if not gameAgent then
                 gate.kick(uid)
                 return
