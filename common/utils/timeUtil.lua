@@ -54,7 +54,7 @@ function timeUtil.getSecond(t)
     })
 end
 
-function time.getDayCount(year, month)
+function timeUtil.getDayCount(year, month)
     local year = tonumber(year)
     local month = tonumber(month)
     if not year or not month then
