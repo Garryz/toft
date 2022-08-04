@@ -14,7 +14,10 @@ function userModule:getInitColumnNameOptions()
     return {
         uid = "int unsigned NOT NULL",
         username = "varchar(50)",
-        password = "varchar(50) DEFAULT NULL"
+        password = "varchar(50) DEFAULT NULL",
+        loginTime = "int(11) DEFAULT 0",
+        lastLoginTime = "int(11) DEFAULT 0",
+        logoutTime = "int(11) DEFAULT 0"
     }
 end
 
@@ -28,6 +31,17 @@ end
 
 function userModule:getPassword()
     return self.password
+end
+
+function userModule:doLogin()
+    userModule.super.doLogin(self)
+    self.loginTime = os.time()
+end
+
+function userModule:doLogout()
+    userModule.super.doLogout()
+    self.logoutTime = os.time()
+    self.lastLoginTime = self.loginTime
 end
 
 return userModule

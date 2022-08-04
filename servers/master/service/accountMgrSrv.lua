@@ -3,6 +3,8 @@ local cluster = require "cluster"
 local accountMgr = require "accountMgr"
 
 function cell.main()
+    accountMgr.init()
+
     cell.command(accountMgr)
     cell.message(accountMgr)
 

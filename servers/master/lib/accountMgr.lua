@@ -1,5 +1,7 @@
 local log = require "log"
 local cluster = require "cluster"
+local redisClass = require "redisClass"
+local timeUtil = require "utils.timeUtil"
 
 local accountMgr = {}
 -- 状态
@@ -9,8 +11,14 @@ local STATUS = {
     LOGOUT = 3
 }
 
+local redis = nil
+
 -- 玩家列表
 local accounts = {} -- accounts[uid] = {uid = uid, status = status, gate = gate, game = game, gameAgent = gameAgent}
+
+function accountMgr.init()
+    redis = redisClass.new("redisSrv", 0)
+end
 
 function accountMgr.login(uid)
     local account = accounts[uid]
@@ -38,6 +46,7 @@ function accountMgr.login(uid)
         status = STATUS.LOGIN
     }
     accounts[uid] = account
+    redis:sadd("dailyActive:" .. timeUtil.toDate(), uid)
     return true
 end
 
