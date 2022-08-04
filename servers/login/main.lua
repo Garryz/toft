@@ -12,10 +12,10 @@ function cell.main()
 
     cell.uniqueservice("stewardSrv")
 
-    cell.uniqueservice("httpServerSrv", "127.0.0.1", 8080, 3, "webapp", 8192)
-
     cell.newservice("poolSrv", "redisSrv", 3, "redisSrv", false, machine.getRedisConf("game"))
     cell.newservice("poolSrv", "mysqlSrv", 3, "mysqlSrv", false, machine.getMysqlConf("game"))
+
+    cell.uniqueservice("httpServerSrv", "127.0.0.1", 8080, 3, "webapp", 8192)
 
     cluster.open("login")
 
