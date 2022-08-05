@@ -17,5 +17,7 @@ function cell.main()
 
     cell.uniqueservice("backupSrv")
 
+    cluster.open("global")
+
     log.info("global start end")
 end
