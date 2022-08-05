@@ -9,4 +9,11 @@ function cell.main()
     cell.message(serverMgr)
 
     cluster.register("serverMgr", cell.self)
+
+    cell.send("stewardSrv", "registerControlFunc", cell.self, {
+        ["updateConfig"] = "updateConfig",
+        ["updateLogic"] = "updateLogic",
+        ["updateProto"] = "updateProto",
+        ["stop"] = "stop"
+    })
 end

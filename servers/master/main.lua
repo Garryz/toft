@@ -12,6 +12,10 @@ function cell.main()
 
     cell.uniqueservice("service.debugconsole", machine.getDebugPort("master"))
 
+    cell.uniqueservice("stewardSrv", true)
+
+    cell.uniqueservice("controlSrv")
+
     cell.newservice("poolSrv", "redisSrv", 3, "redisSrv", false, machine.getRedisConf("game"))
     cell.newservice("poolSrv", "mysqlSrv", 3, "mysqlSrv", false, machine.getMysqlConf("game"))
 

@@ -9,4 +9,10 @@ function cell.main(conf, handlerName)
 
     cell.command(watchdog)
     cell.message(watchdog)
+
+    cell.send("stewardSrv", "registerControlFunc", cell.self, {
+        ["updateConfig"] = "updateConfig",
+        ["updateLogic"] = "updateLogic",
+        ["updateProto"] = "updateProto"
+    })
 end

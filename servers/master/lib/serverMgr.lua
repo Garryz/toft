@@ -2,6 +2,7 @@ local clusterClass = require "clusterClass"
 local log = require "log"
 local timer = require "timer"
 local cluster = require "cluster"
+local hotfix = require "hotfix.helper"
 
 local serverMgr = {}
 
@@ -67,6 +68,49 @@ function serverMgr.getServerInfo(nodeType, nodeName)
     end
 
     return clusterObj:getServerByNodeName(nodeName)
+end
+
+function serverMgr.updateConfig()
+    for _, clusterObj in pairs(clusterList) do
+        local servers = clusterObj:getAvaliableServerList()
+        for _, server in ipairs(servers) do
+            -- 更新各节点配置
+            cluster.send(server:getNodeName(), "stewardSrv", "updateConfig")
+        end
+    end
+end
+
+function serverMgr.updateLogic(files)
+    hotfix.init()
+    hotfix.update(files)
+
+    for _, clusterObj in pairs(clusterList) do
+        local servers = clusterObj:getAvaliableServerList()
+        for _, server in ipairs(servers) do
+            -- 更新各节点逻辑
+            cluster.send(server:getNodeName(), "stewardSrv", "updateLogic")
+        end
+    end
+end
+
+function serverMgr.updateProto()
+    for _, clusterObj in pairs(clusterList) do
+        local servers = clusterObj:getAvaliableServerList()
+        for _, server in ipairs(servers) do
+            -- 更新各节点协议
+            cluster.send(server:getNodeName(), "stewardSrv", "updateProto")
+        end
+    end
+end
+
+function serverMgr.stop()
+    for _, clusterObj in pairs(clusterList) do
+        local servers = clusterObj:getAvaliableServerList()
+        for _, server in ipairs(servers) do
+            -- 更新各节点逻辑
+            cluster.send(server:getNodeName(), "stewardSrv", "stop")
+        end
+    end
 end
 
 return serverMgr

@@ -4,6 +4,7 @@ local socket = require "socket"
 local const = require "const"
 local timer = require "timer"
 local log = require "log"
+local hotfix = require "hotfix.helper"
 
 local watchdog = {}
 
@@ -153,6 +154,19 @@ function watchdog.init(conf, h)
         end)
     end)
     timer.timeOut(const.WAIT_SOCKET_EXPIRE_TIME, expire)
+end
+
+function watchdog.updateConfig()
+
+end
+
+function watchdog.updateLogic(files)
+    hotfix.init()
+    hotfix.update(files)
+end
+
+function watchdog.updateProto()
+    protoUtil.update()
 end
 
 return watchdog

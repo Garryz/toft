@@ -4,6 +4,8 @@ local httpd = require "http.httpd"
 local sockethelper = require "http.sockethelper"
 local urllib = require "http.url"
 local log = require "log"
+local hotfix = require "hotfix.helper"
+local protoUtil = require "utils.protoUtil"
 
 local bodyLimit = 8192
 
@@ -42,6 +44,19 @@ function command.http(fd, ip)
     sock:disconnect()
 end
 
+function command.updateConfig()
+
+end
+
+function command.updateLogic(files)
+    hotfix.init()
+    hotfix.update(files)
+end
+
+function command.updateProto()
+    protoUtil.update()
+end
+
 cell.command(command)
 cell.message(command)
 
@@ -51,4 +66,10 @@ function cell.main(webModuleName, bodyLimit)
         webapp.init()
     end
     bodyLimit = bodyLimit or 8192
+
+    cell.send("stewardSrv", "registerControlFunc", cell.self, {
+        ["updateConfig"] = "updateConfig",
+        ["updateLogic"] = "updateLogic",
+        ["updateProto"] = "updateProto"
+    })
 end

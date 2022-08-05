@@ -2,6 +2,7 @@ local log = require "log"
 local cluster = require "cluster"
 local redisClass = require "redisClass"
 local timeUtil = require "utils.timeUtil"
+local hotfix = require "hotfix.helper"
 
 local accountMgr = {}
 -- 状态
@@ -97,6 +98,11 @@ function accountMgr.logout(uid)
     accounts[uid] = nil
 
     return true
+end
+
+function accountMgr.updateLogic(files)
+    hotfix.init()
+    hotfix.update(files)
 end
 
 return accountMgr

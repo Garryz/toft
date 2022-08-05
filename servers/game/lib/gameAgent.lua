@@ -6,6 +6,7 @@ local protoUtil = require "utils.protoUtil"
 local code = require "code"
 local timer = require "timer"
 local const = require "const"
+local hotfix = require "hotfix.helper"
 
 local roleMgr = (require "roleMgr").new()
 
@@ -148,6 +149,19 @@ end
 -- 处理客户端协议数据
 function gameAgent.protoData(msg)
     cs(msg.req.uid)(protoData, msg)
+end
+
+function gameAgent.updateConfig()
+
+end
+
+function gameAgent.updateLogic(files)
+    hotfix.init()
+    hotfix.update(files)
+end
+
+function gameAgent.updateProto()
+    protoUtil.update()
 end
 
 function gameAgent.stop()

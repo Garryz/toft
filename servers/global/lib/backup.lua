@@ -7,6 +7,7 @@ local log = require "log"
 local backupRole = require "backupRole"
 local timeUtil = require "utils.timeUtil"
 local cluster = require "cluster"
+local hotfix = require "hotfix.helper"
 
 local backup = {}
 
@@ -96,6 +97,11 @@ function backup.init()
     redis = redisClass.new("redisSrv", 0)
 
     timer.timeOfDay(2, 0, 0, swapProcessThread)
+end
+
+function backup.updateLogic(files)
+    hotfix.init()
+    hotfix.update(files)
 end
 
 return backup

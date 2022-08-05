@@ -6,4 +6,11 @@ function cell.main()
 
     cell.command(gameAgent)
     cell.message(gameAgent)
+
+    cell.send("stewardSrv", "registerControlFunc", cell.self, {
+        ["updateConfig"] = "updateConfig",
+        ["updateLogic"] = "updateLogic",
+        ["updateProto"] = "updateProto",
+        ["stop"] = "stop"
+    })
 end

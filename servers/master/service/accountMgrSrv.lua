@@ -9,5 +9,9 @@ function cell.main()
     cell.message(accountMgr)
 
     cluster.register("accountMgr", cell.self)
+
+    cell.send("stewardSrv", "registerControlFunc", cell.self, {
+        ["updateLogic"] = "updateLogic"
+    })
 end
 

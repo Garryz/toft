@@ -10,4 +10,10 @@ function cell.main()
 
     cell.register("gateSrv")
     cluster.register("gateSrv", cell.self)
+
+    cell.send("stewardSrv", "registerControlFunc", cell.self, {
+        ["updateConfig"] = "updateConfig",
+        ["updateLogic"] = "updateLogic",
+        ["updateProto"] = "updateProto"
+    })
 end

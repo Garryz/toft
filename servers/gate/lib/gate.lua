@@ -7,6 +7,7 @@ local tokenUtil = require "utils.tokenUtil"
 local cluster = require "cluster"
 local env = require "env"
 local protoUtil = require "utils.protoUtil"
+local hotfix = require "hotfix.helper"
 
 local connectMap = {} -- fd -> {fd = fd, watchdog = watchdog, auth = false, uid = uid}
 local sessionMap = {} -- uid -> {fd = fd, gameNode = gameNode, gameAgent = gameAgent, heart = heart}
@@ -260,6 +261,19 @@ end
 function gate.init()
     protoUtil.init()
     timer.timeOut(const.WAIT_SOCKET_EXPIRE_TIME, heart)
+end
+
+function gate.updateConfig()
+
+end
+
+function gate.updateLogic(files)
+    hotfix.init()
+    hotfix.update(files)
+end
+
+function gate.updateProto()
+    protoUtil.update()
 end
 
 return gate

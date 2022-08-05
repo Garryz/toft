@@ -6,4 +6,8 @@ function cell.main()
 
     cell.command(backup)
     cell.message(backup)
+
+    cell.send("stewardSrv", "registerControlFunc", cell.self, {
+        ["updateLogic"] = "updateLogic"
+    })
 end
