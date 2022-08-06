@@ -2,7 +2,7 @@
 
 function get_platform(){
     uname=$(uname -s)
-    if [ "$uname"=="Darwin" ]; then
+    if [ "$uname" == "Darwin" ]; then
         platform="macosx"
     else
         platform="linux"

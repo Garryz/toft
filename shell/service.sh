@@ -49,9 +49,16 @@ function fstop(){
     if [[ ! -z $1 && "$1" != "all" ]]; then
         kill_process $1
     else
-        let len=${#process_list[@]}-1
+        len=0
+        for pname in ${process_list[@]} ; do
+            list[$len]=$pname
+            let len=$len+1
+        done
+
+        let len=$len-1
         for ((i=len;i>=0;i--)); do
-            kill_process ${process_list[i]}
+            kill_process ${list[i]}
+            sleep 0.5
         done
     fi
 }
