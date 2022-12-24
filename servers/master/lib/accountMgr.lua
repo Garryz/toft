@@ -63,7 +63,8 @@ end
 function accountMgr.setGame(uid, game, gameAgent)
     local account = accounts[uid]
     if not account then
-        return
+        account = {}
+        accounts[uid] = account
     end
 
     account.game = game
@@ -96,6 +97,22 @@ function accountMgr.logout(uid)
     account.status = STATUS.LOGOUT
 
     accounts[uid] = nil
+
+    return true
+end
+
+function accountMgr.logoutInactive(uid)
+    local account = accounts[uid]
+    if not account then
+        return false
+    end
+
+    if account.gate then
+        account.game = nil
+        account.gameAgent = nil
+    else
+        accounts[uid] = nil
+    end
 
     return true
 end

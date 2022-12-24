@@ -51,6 +51,13 @@ function role:logoutModule()
     end
 end
 
+-- 非活跃登录
+function role:inactiveLoginModule()
+    for _, cname in pairs(self.moduleList) do
+        self[cname]:loadData()
+    end
+end
+
 -- 保存各个模块数据
 function role:saveData()
     for _, cname in pairs(self.moduleList) do

@@ -30,5 +30,12 @@ function cell.main()
         cell.call(addr, "doStart", name, processId)
     end
 
+    local protoUtil = require "utils.protoUtil"
+    protoUtil.init()
+    local playerUtil = require "utils.playerUtil"
+    local password1 = playerUtil.getPassword(10001)
+    local password2 = playerUtil.getPassword(10001)
+    log.infof("分布式玩家数据调用 password1 = %s, password2 = %s", password1, password2)
+
     log.info("client start end")
 end

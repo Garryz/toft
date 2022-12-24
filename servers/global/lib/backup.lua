@@ -30,7 +30,7 @@ local function getSecsSwapLoginTime()
     return swapDays * 24 * 3600
 end
 
-local function swapOneDay(key)
+local function swapOneDay(key, inactive)
     log.infof("swapOneDay key[%s]", string.toString(key))
     local uidList = redis:smembers(key)
     if not next(uidList) then
@@ -47,6 +47,11 @@ local function swapOneDay(key)
             -- 最后登录时间
             local loginTime = role:getLoginTime()
             if loginTime and (loginTime == 0 or timeUtil.currentTime() > loginTime + secsSwapLoginTime) then
+                local session = cluster.call("master", "accountMgr", "getSession", uid)
+                if session and session.game and session.gameAgent and inactive then
+                    cluster.send(session.game, session.gameAgent, "logoutInactive", uid)
+                end
+
                 local ok = role:loadRedisData()
                 if not ok then
                     log.errorf("swapOneDay key[%s] uid[%s] loadRedisData error ", string.toString(key), uid)
@@ -57,7 +62,7 @@ local function swapOneDay(key)
                     log.errorf("swapOneDay key[%s] uid[%s] backupToMysql error ", string.toString(key), uid)
                     return false
                 end
-                if not cluster.call("master", "accountMgr", "getSession", uid) then
+                if not session or not session.gate then
                     role:delRedisData()
                 end
             end
@@ -71,22 +76,30 @@ end
 
 local function swapProcessThread()
     local currDay = getDay(timeUtil.currentTime())
-    local activeKeys = redis:keys("dailyActive:*")
-    if not next(activeKeys) then
-        return
-    end
 
-    for _, v in ipairs(activeKeys) do
-        local time = string.split(v, ":")
-        time = string.split(time[2], "-")
-        local day = getDay(timeUtil.getTime(time[1], time[2], time[3]))
-        if currDay - day > backupDays then
-            local ok, r = pcall(swapOneDay, v)
-            if not ok then
-                log.errorf("swapOneDay error %s", r or "")
+    local function swap(keys, inactive)
+        if not next(keys) then
+            return
+        end
+
+        for _, v in ipairs(keys) do
+            local time = string.split(v, ":")
+            time = string.split(time[2], "-")
+            local day = getDay(timeUtil.getTime(time[1], time[2], time[3]))
+            if currDay - day > backupDays then
+                local ok, r = pcall(swapOneDay, v, inactive)
+                if not ok then
+                    log.errorf("swapOneDay error %s", r or "")
+                end
             end
         end
     end
+
+    local activeKeys = redis:keys("dailyActive:*")
+    swap(activeKeys)
+
+    local inactiveKeys = redis:keys("dailyInactive:*")
+    swap(inactiveKeys, true)
 end
 
 function backup.init()

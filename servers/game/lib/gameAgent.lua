@@ -43,14 +43,16 @@ end
 -- 登录
 function gameAgent.login(uid, session)
     roleMgr:loginRole(uid, session)
-    cluster.call("master", "accountMgr", "setGame", uid, session.game, session.gameAgent)
     return true
 end
 
 -- 登出
 function gameAgent.logout(uid)
     roleMgr:logoutRole(uid)
-    cluster.call("master", "accountMgr", "logout", uid)
+end
+
+function gameAgent.logoutInactive(uid)
+    roleMgr:logoutInactiveRole(uid)
 end
 
 -- 获取接口对象
@@ -149,6 +151,53 @@ end
 -- 处理客户端协议数据
 function gameAgent.protoData(msg)
     cs(msg.req.uid)(protoData, msg)
+end
+
+local function doCmd(uid, cmd, args)
+    local role = roleMgr:getRoleMayInactive(uid)
+    if not role then
+        log.warningf("doCmd uid[%s] role nil", tostring(uid))
+        return
+    end
+
+    local itfName, funcName = cmd:match "([^.]*).(.*)"
+    if itfName == "test" and not machine.isTest() then
+        log.errorf("testInterface is forbiden in production ! itfName:%s, funcName:%s", itfName, funcName)
+        return
+    end
+    local ok, itfObj = pcall(getItfObj, itfName)
+    if not ok or not itfObj then
+        log.errorf("doCmd dont find module ! itfName:%s, funcName:%s", itfName, funcName)
+        return
+    end
+    local func = itfObj[funcName]
+    if not func then
+        log.errorf("dont find func ! itfName:%s, funcName:%s", itfName, funcName)
+        return
+    end
+
+    local ok, errorcode, rs = xpcall(func, function()
+        log.error(debug.traceback())
+    end, role, args)
+    if not ok then
+        log.errorf("itfName:%s, funcName:%s, args:%s", itfName, funcName, string.toString(args))
+        return
+    end
+
+    role:setSaveStatus(true)
+
+    return errorcode, rs
+end
+
+function gameAgent.doCmd(uid, cmd, args)
+    return cs(uid)(doCmd, uid, cmd, args)
+end
+
+function gameAgent.broadcastDoCmd(cmd, args)
+    local roleList = roleMgr:getRoleList()
+    for uid, _ in pairs(roleList) do
+        gameAgent.doCmd(uid, cmd, args)
+    end
 end
 
 function gameAgent.updateConfig()

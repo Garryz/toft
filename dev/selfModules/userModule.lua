@@ -1,6 +1,6 @@
 local baseModule = require "baseModule"
 
-local userModule = Class("userModule", baseModule)
+local userModule = Class("user", baseModule)
 
 function userModule:ctor(uid)
     userModule.super.ctor(self, "redisSrv", "mysqlSrv", uid, "tb_user", "uid")
