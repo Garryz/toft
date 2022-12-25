@@ -63,7 +63,9 @@ end
 function accountMgr.setGame(uid, game, gameAgent)
     local account = accounts[uid]
     if not account then
-        account = {}
+        account = {
+            uid = uid
+        }
         accounts[uid] = account
     end
 
