@@ -67,6 +67,7 @@ local function responseProto(uid, cmd, errcode, res)
     res = res or {}
     assert(type(res) == "table",
         string.format("uid:%s,cmd:%s,errcode:%s,res:%s", uid, cmd, errcode, string.toString(res)))
+    res.code = errcode
 
     local role = roleMgr:getRole(uid)
     if not role then

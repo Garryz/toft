@@ -3,7 +3,7 @@ local baseTask = require "task.baseTask"
 local protoUtil = require "utils.protoUtil"
 local log = require "log"
 local httpc = require "http.httpc"
-local code = require "crypt"
+local code = require "code"
 
 local httpLoginTask = Class("httpLoginTask", baseTask)
 
