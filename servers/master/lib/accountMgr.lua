@@ -3,6 +3,8 @@ local cluster = require "cluster"
 local redisClass = require "redisClass"
 local timeUtil = require "utils.timeUtil"
 local hotfix = require "hotfix.helper"
+local const = require "const"
+local timer = require "timer"
 
 local accountMgr = {}
 -- 状态
@@ -15,10 +17,20 @@ local STATUS = {
 local redis = nil
 
 -- 玩家列表
-local accounts = {} -- accounts[uid] = {uid = uid, status = status, gate = gate, game = game, gameAgent = gameAgent}
+local accounts = {} -- accounts[uid] = {uid = uid, status = status, heart = heart, gate = gate, game = game, gameAgent = gameAgent}
+
+local function heart()
+    local currentTime = os.time()
+    for uid, account in pairs(accounts) do
+        if account.status == STATUS.LOGIN and currentTime - account.heart >= const.WAIT_LOGIN_EXPIRE_TIME then
+            accounts[uid] = nil
+        end
+    end
+end
 
 function accountMgr.init()
     redis = redisClass.new("redisSrv", 0)
+    timer.timeOut(const.WAIT_LOGIN_EXPIRE_TIME, heart)
 end
 
 function accountMgr.login(uid)
@@ -44,7 +56,8 @@ function accountMgr.login(uid)
     -- 上线
     local account = {
         uid = uid,
-        status = STATUS.LOGIN
+        status = STATUS.LOGIN,
+        heart = os.time()
     }
     accounts[uid] = account
     redis:sadd("dailyActive:" .. timeUtil.toDate(), uid)
