@@ -194,6 +194,11 @@ function gameAgent.doCmd(uid, cmd, args)
     return cs(uid)(doCmd, uid, cmd, args)
 end
 
+-- 获取玩家属性不加锁
+function gameAgent.getContext(uid, cmd, args)
+    doCmd(uid, cmd, args)
+end
+
 function gameAgent.broadcastDoCmd(cmd, args)
     local roleList = roleMgr:getRoleList()
     for uid, _ in pairs(roleList) do
