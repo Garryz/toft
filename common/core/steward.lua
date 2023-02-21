@@ -15,10 +15,10 @@ local fileTimes = {}
 
 local weight = const.SERVER_DEFAULT_WEIGHT
 local load = 0
+local nodeType = env.getconfig("nodeType")
+local nodeName = env.getconfig("nodeName")
 
 local function pingMaster()
-    local nodeType = env.getconfig("nodeType")
-    local nodeName = env.getconfig("nodeName")
     local serverData = {
         weight = weight,
         nodeType = nodeType,
