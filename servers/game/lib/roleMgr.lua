@@ -7,11 +7,10 @@ local env = require "env"
 local cell = require "cell"
 
 local redis
-local gameNode
+local gameNode = env.getconfig("nodeName")
 
 cell.init(function()
     redis = redisClass.new("redisSrv", 0)
-    gameNode = env.getconfig("nodeName")
 end)
 
 local roleMgr = Class("roleMgr")

@@ -11,6 +11,7 @@ local hotfix = require "hotfix.helper"
 
 local connectMap = {} -- fd -> {fd = fd, watchdog = watchdog, auth = false, uid = uid}
 local sessionMap = {} -- uid -> {fd = fd, gameNode = gameNode, gameAgent = gameAgent, heart = heart}
+local nodeName = env.getconfig("nodeName")
 
 local gate = {}
 
@@ -109,7 +110,7 @@ function gate.forward(fd, msg)
             local newSession = {
                 fd = fd,
                 heart = os.time(),
-                gate = env.getconfig("nodeName")
+                gate = nodeName
             }
 
             cluster.call("master", "accountMgr", "setGate", uid, newSession.gate)
