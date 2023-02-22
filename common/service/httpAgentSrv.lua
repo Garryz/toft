@@ -22,23 +22,25 @@ local webapp
 
 function command.http(fd, ip)
     local sock = socket.bind(fd)
-    local code, url, method, header, body = httpd.readrequest(sockethelper.readfunc(sock), bodyLimit)
-    if code then
-        if code ~= 200 then
-            response(sock, code)
-        else
-            local path, query = urllib.parse(url)
-            local q = {}
-            if query then
-                q = urllib.parsequery(query)
+    while sock:isconnect() do
+        local code, url, method, header, body = httpd.readrequest(sockethelper.readfunc(sock), bodyLimit)
+        if code then
+            if code ~= 200 then
+                response(sock, code)
+            else
+                local path, query = urllib.parse(url)
+                local q = {}
+                if query then
+                    q = urllib.parsequery(query)
+                end
+                response(sock, webapp.httpRequest(ip, url, method, header, path, q, body))
             end
-            response(sock, webapp.httpRequest(ip, url, method, header, path, q, body))
-        end
-    else
-        if url == sockethelper.socketerror then
-            log.error("socket closed")
         else
-            log.error(url)
+            if url == sockethelper.socketerror then
+                log.error("socket closed")
+            else
+                log.error(url)
+            end
         end
     end
     sock:disconnect()
